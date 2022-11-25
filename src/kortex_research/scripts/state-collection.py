@@ -129,17 +129,24 @@ def main():
   if not kortex.is_init_success:
       return 
 
-  kortex.reach_named_position("vertical")
 
   data = []
 
-  joint_shift = [0, 0.1, 0, 0, 0, 0, 0]
-  for x in range(24):
-    rospy.loginfo("Step " + str(x + 1) + " of 100")
-    kortex.shift_joint_values(joint_shift, tolerance=0.01)
-    joints = kortex.get_joint_values()
-    pose = kortex.get_end_pose()
-    data.append(joints + pose)
+  joint_steps = [20, 10]
+
+  for i in range(joint_steps[0]):
+    kortex.reach_named_position("vertical")
+    joint_shift_0 = [0.2*i, 0, 0, 0, 0, 0, 0]
+    rospy.loginfo(f"Position {i + 1} of {joint_steps[0]}")
+    kortex.shift_joint_values(joint_shift_0, tolerance=0.01)
+
+    joint_shift_1 = [0, 0.1, 0, 0, 0, 0, 0]
+    for x in range(joint_steps[1]):
+        rospy.loginfo(f"Step {x + 1} of {joint_steps[1]}")
+        kortex.shift_joint_values(joint_shift_1, tolerance=0.01)
+        joints = kortex.get_joint_values()
+        pose = kortex.get_end_pose()
+        data.append(joints + pose)
 
 
   data = np.round(data, decimals=2)
